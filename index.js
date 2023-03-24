@@ -1,36 +1,44 @@
 //Declare Library
 const Discord = require('discord.js');
+
 //const dotenv = require('dotenv');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const fs = require('fs');
-const { Player } = require('discord-player');
+const { Player, Playlist } = require('discord-player');
+const { OpenAIApi, Configuration } = require('openai')
 
 const LOAD_SPLASH = process.argv[2] === 'load';
-
 
 //config
 const config = require('./config.json');
 const CLIENT_ID = config.id;
 const GUILD_ID = config.guild_id;
 
+const openaiConfig = new Configuration({
+    apiKey: config.openai_key
+})
+
+
 //Client
 const client = new Discord.Client({
     intents: [
-		Discord.GatewayIntentBits.Guilds,
-		Discord.GatewayIntentBits.GuildMessages,
+        Discord.GatewayIntentBits.Guilds,
+        Discord.GatewayIntentBits.GuildMessages,
         Discord.GatewayIntentBits.GuildVoiceStates
-	],
+    ],
 });
 
 client.slashCommands = new Discord.Collection();
 
-client.Player = new Player(client, {
-    ytdlOptions: { 
-        quality: 'highestaudio', 
+client.player = new Player(client, {
+    ytdlOptions: {
+        quality: 'highestaudio',
         highWaterMark: 1 << 25
     },
 });
+
+client.openai = new OpenAIApi(openaiConfig)
 
 //Slash Commands
 const commands = [];
@@ -42,10 +50,9 @@ for (let file of SlashFiles) {
     if (LOAD_SPLASH) commands.push(slashcmd.data.toJSON());
 }
 
-if(LOAD_SPLASH) {
-    const rest = new REST({ version: '9' }).setToken(config.token); 
-    for (let index = 0; index < GUILD_ID.length; index++) {
-        rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID[index]), { body: commands })
+if (LOAD_SPLASH) {
+    const rest = new REST({ version: '10' }).setToken(config.token);
+    rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands })
         .then(() => {
             console.log('Successfully registered application commands.');
             process.exit(0);
@@ -54,7 +61,6 @@ if(LOAD_SPLASH) {
             console.error(error);
             process.exit(1);
         });
-    }
 }
 else {
     client.on('ready', () => {
@@ -62,13 +68,20 @@ else {
     });
     client.on('interactionCreate', (interaction) => {
         async function handleCommand() {
-            if(!interaction.isCommand()) return;
+            if (!interaction.isCommand()) return;
 
             const slashcmd = client.slashCommands.get(interaction.commandName);
-            if(!slashcmd) interaction.reply("Command not found");
+            if (!slashcmd) interaction.reply("Command not found");
 
             await interaction.deferReply();
-            await slashcmd.run({ client, interaction });
+
+            try {
+                await slashcmd.run({ client, interaction });
+            }
+            catch (error) {
+                console.error(error);
+                await interaction.editReply({ content: 'There was an error while executing this command!', ephemeral: true });
+            }
         }
         handleCommand();
     });

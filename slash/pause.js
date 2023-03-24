@@ -5,12 +5,14 @@ module.exports = {
         .setName('pause')
         .setDescription('Pause the music'),
     run: async ({ client, interaction }) => {
-        const queue = client.Player.getQueue(interaction.guildId);
+        const queue = client.player.queues.get(interaction.guildId);
 
-        if(!queue) return await interaction.editReply('There are no songs in queue');
+        if (!queue) return await interaction.editReply('There are no songs in queue');
 
-        queue.setPaused(true);
+        if (queue.node.isPaused())
+            return await interaction.editReply("Music is already paused!");
 
+        queue.node.pause();
         await interaction.editReply("Music has been paused! Use \`/resume\` to resume the music!");
     }
 }
