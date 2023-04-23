@@ -21,6 +21,14 @@ module.exports = {
         });
 
         let content = completion.data.choices[0].message.content;
-        await interaction.editReply(`User: ${prompt}\n\n` + content);
+
+        if (content.length > 2000) {
+            let atc = new AttachmentBuilder()
+                .setFile(Buffer.from(`User: ${prompt}\n\n` + content))
+                .setName('Definitely Virus.txt');
+            await interaction.editReply({ files: [atc] })
+        } else {
+            await interaction.editReply(`User: ${prompt}\n\n` + content);
+        }
     }
 }
