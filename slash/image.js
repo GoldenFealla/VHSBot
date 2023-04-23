@@ -2,8 +2,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('prompt')
-        .setDescription('Ask chatgpt anything')
+        .setName('image')
+        .setDescription('prompt an image')
         .addStringOption(option => option.setName('prompt').setDescription('The prompt to ask chatgpt').setRequired(true))
     ,
     run: async ({ client, interaction }) => {
@@ -15,12 +15,13 @@ module.exports = {
             return;
         }
 
-        const completion = await client.openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: prompt }],
+        const image = await client.openai.createImage({
+            prompt: `${prompt}`,
+            n: 1,
+            size: "1024x1024",
         });
 
-        let content = completion.data.choices[0].message.content;
-        await interaction.editReply(`User: ${prompt}\n\n` + content);
+        let content = image.data.data[0].url;
+        await interaction.editReply(content);
     }
 }
