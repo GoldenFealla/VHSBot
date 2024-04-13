@@ -21,7 +21,7 @@ const run = async ({ server, interaction }) => {
 
     let bar = queue.node.createProgressBar({
         queue: false,
-        length: 20,
+        length: 15,
     });
 
     const currentTrack = queue.currentTrack;
@@ -30,6 +30,7 @@ const run = async ({ server, interaction }) => {
         .setColor(config.color)
         .setTitle('🌸🌸🌸 Current Playing 🌸🌸🌸')
         .setDescription(`Current Playing [${currentTrack.title}](${currentTrack.url})\n\n` + bar)
+        .setThumbnail(currentTrack.thumbnail)
 
     await interaction.editReply({ embeds: [embed]});
 }

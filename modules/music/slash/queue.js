@@ -22,7 +22,7 @@ const run = async ({ server, interaction }) => {
         return await interaction.editReply('There are no songs in queue');
     }
 
-    const totalPages = Math.ceil(queue.tracks.length / 10) || 1;
+    const totalPages = Math.ceil(queue.tracks.size / 10) || 1;
     const page = (interaction.options.getInteger('page') || 1) - 1;
 
     if (page > totalPages) {
@@ -49,10 +49,12 @@ const run = async ({ server, interaction }) => {
         }
     )
 
-    queue.tracks.store.slice(page * 10, (page + 1) * 10).forEach((track, index) => {
+    const perPage = 10;
+
+    queue.tracks.store.slice(page * perPage, (page + 1) * 10).forEach((track, index) => {
         embed.addFields(
             {
-                name: `${index + 1}. ${track.title}`,
+                name: `${perPage * page + index + 1}. ${track.title}`,
                 value: `Requested by <@${track.requestedBy.id}>`,
                 inline: false
             }

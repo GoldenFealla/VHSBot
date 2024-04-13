@@ -20,6 +20,7 @@ const run = async ({ server, interaction }) => {
     if (!queue.tracks) return await interaction.editReply('There are no songs in queue');
 
     queue.node.stop();
+    queue.delete();
 
     const embed = new EmbedBuilder()
         .setColor(config.color)

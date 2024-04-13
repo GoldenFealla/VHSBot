@@ -1,4 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { EmbedBuilder } from 'discord.js';
 
 import config from '#root/config.json' assert { type: "json" };
 
@@ -27,7 +28,7 @@ const run = async ({ server, interaction }) => {
 
     const trackNumber = interaction.options.getNumber('number');
 
-    if (trackNumber > queue.tracks.length)
+    if (trackNumber > queue.tracks.size)
         return await interaction.editReply({
             embeds: [
                 new EmbedBuilder()

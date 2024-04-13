@@ -14,6 +14,7 @@ initializeServer().then(server => {
             server.resetSlashCommands();
             break;
         default:
+            server.loadModule(MusicModule);
             server.start();
             break;
     }

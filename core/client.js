@@ -70,7 +70,7 @@ export const initializeServer = async () => {
             await command.run({server, interaction});
         } catch (error) {
             console.error(error);
-            await interaction.reply(
+            await interaction.editReply(
                 { 
                     content: `
                         There was an error while executing this command!
@@ -86,8 +86,16 @@ export const initializeServer = async () => {
     
     }
 
+    /**
+     * @param {Error} error 
+     */
+    const handleOnError = (error) => {
+        console.error(error);
+    }
+
     client.on('ready', handleOnReady);
     client.on('interactionCreate', handleOnInteractionCreate)
+    client.on('error', handleOnError);
 
     server.player = new Player(client, {
         ytdlOptions: {
@@ -103,11 +111,8 @@ export const initializeServer = async () => {
 
     server.loadModule = (module) => {
         module.slashes.forEach(slash => {
-            server.slashCommandDatas.push(slash.data.toJSON());
-        })
-
-        module.slashes.forEach(slash => {
             server.slashCommands.set(slash.data.name, slash);
+            server.slashCommandDatas.push(slash.data.toJSON());
         })
     }
 

@@ -28,7 +28,7 @@ const createEmbedBySingleTrack = (track) => {
     const embed = new EmbedBuilder()
         .setColor(config.color)
         .setTitle(`🌸🌸🌸 Added song to queue 🌸🌸🌸`)
-        .setDescription(`**[${track.title}](${track.url})**`)
+        .setDescription(`Added **[${track.title}](${track.url})** to the queue!\nRequested by <@${track.requestedBy.id}>`)
         .setImage(track.thumbnail)
         .setFooter({ text: `Duration: ${track.duration}` })
 
@@ -49,7 +49,7 @@ const createEmbedByPlaylist = (playlist) => {
     const seconds = getSeconds(duration);
 
     embed
-        .setColor(color)
+        .setColor(config.color)
         .setTitle(`🌸🌸🌸 Added playlist to queue 🌸🌸🌸`)
         .setDescription(`Added **[${playlist.tracks.length} songs](${playlist.url})** from **[${playlist.title}](${playlist.url})** to the queue!`)
         .setImage(playlist.thumbnail)
@@ -102,7 +102,7 @@ const playByURL = async ({server, interaction}) => {
  * @param {import('../../../core/client').Server} obj.server
  * @returns 
  */
-const playBySearch = async ({server, interaction }) => {
+const playBySearch = async ({ server, interaction }) => {
     let url = interaction.options.getString('searchterms');
     
     const result = await server.player.search(url, {
@@ -132,7 +132,7 @@ const run = async ({ server, interaction }) => {
     if (interaction.options.getSubcommand() === 'song') {
         await playByURL({ server, interaction });
     } else if (interaction.options.getSubcommand() === 'search') {
-        await playBySearch(interaction, server);
+        await playBySearch({ server, interaction });
     }
 }
 
