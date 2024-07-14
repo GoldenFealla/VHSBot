@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { EmbedBuilder } from "discord.js";
 
-import { Playlist, QueryType, Track } from "discord-player";
+import { Playlist, QueryType, Track, useMainPlayer } from "discord-player";
 
 import { getSeconds, getMinutes, getHours } from "#helpers/time.js";
 import config from "#root/config.json" assert { type: "json" };
@@ -75,6 +75,7 @@ const createEmbedByPlaylist = (playlist) => {
  * @returns
  */
 const playByURL = async ({ interaction }) => {
+  const player = useMainPlayer();
   const url = interaction.options.getString("url");
 
   const { track, searchResult } = await player.play(interaction.member.voice.channel, url, {
@@ -111,10 +112,11 @@ const playByURL = async ({ interaction }) => {
  * @param {import('../../../core/client').Server} obj.server
  * @returns
  */
-const playBySearch = async ({ server, interaction }) => {
+const playBySearch = async ({ interaction }) => {
+  const player = useMainPlayer();
   let url = interaction.options.getString("searchterms");
 
-  const result = await server.player.search(url, {
+  const result = await player.search(url, {
     requestedBy: interaction.user,
     searchEngine: QueryType.AUTO,
   });
