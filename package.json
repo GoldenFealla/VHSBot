@@ -12,11 +12,13 @@
     "#helpers/*": "./helpers/*"
   },
   "dependencies": {
+    "@discord-player/extractor": "^4.4.7",
     "@discordjs/builders": "^1.8.2",
     "@discordjs/opus": "^0.9.0",
     "@discordjs/rest": "^2.3.0",
-    "@web-scrobbler/metadata-filter": "^3.1.0",
-    "discord-player": "^6.6.9",
+    "@web-scrobbler/metadata-filter": "^3.2.0",
+    "discord-player": "^6.6.10",
+    "discord-player-youtubei": "^1.1.8",
     "discord.js": "^14.15.3",
     "dotenv": "^16.4.5",
     "ytdl-core": "^4.11.5"
